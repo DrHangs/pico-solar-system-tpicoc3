@@ -1,6 +1,7 @@
 from random import getrandbits, uniform
 import math
 from micropython import const
+from st7789 import color565 as PEN
 
 
 class Pluto:
@@ -12,12 +13,16 @@ class Pluto:
         self.display = display
         self.x = 240.0
         self.y = 0
+        self.px = self.x
+        self.py = self.y
         self.vel_x = -3.0
         self.y_max = 135 - Pluto.R
         self.x_min = 140 + Pluto.R
         self.x_max = 240 - Pluto.R
 
     def step(self, seconds, diff):
+        self.px = self.x
+        self.py = self.y
         if diff > 1000:
             diff = 1000
         invertedSeconds = 60 - seconds
@@ -37,11 +42,13 @@ class Pluto:
             self.x = self.x_min
 
     def draw(self):
-        self.display.set_pen(self.display.create_pen(156, 166, 183))
-        self.display.circle(int(self.x), int(self.y), Pluto.R)
+        #self.display.set_pen(self.display.create_pen(156, 166, 183))
+        self.display.circle(int(self.px), int(self.py), Pluto.R, PEN(0, 0, 0)) #delete previous draw
+        self.display.circle(int(self.x), int(self.y), Pluto.R, PEN(156, 166, 183))
 
     def reset(self):
         vel = uniform(3, 7)
         if bool(getrandbits(1)):
             vel *= -1
         self.vel_x = vel
+        self.display.circle(int(self.x), int(self.y), Pluto.R, PEN(0, 0, 0))
